@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+
 
 class MoviesController extends Controller
 {
+
+    public $api_endpoint = 'https://api.themoviedb.org/3/';
+
     /**
      * Display a listing of the resource.
      *
@@ -14,6 +19,33 @@ class MoviesController extends Controller
     public function index()
     {
         //
+
+        $popularMovies = Http::withToken(config('services.tmdb.token'))
+            ->get($this->api_endpoint . 'movie/popular')
+            ->json()['results'];
+
+        // dd($popularMovies);
+
+        $nowPlayingMovies = Http::withToken(config('services.tmdb.token'))
+            ->get($this->api_endpoint . 'movie/now_playing')
+            ->json()['results'];
+
+        $genresArray = Http::withToken(config('services.tmdb.token'))
+            ->get($this->api_endpoint . 'genre/movie/list')
+            ->json()['genres'];
+        // dd($genresArray);
+
+        $genres = collect($genresArray)->mapWithKeys((function ($genre) {
+            return [$genre['id'] => $genre['name']];
+        }));
+
+        // dump($nowPlayingMovies);
+        // dd($popularMovies);
+        return view('index', [
+            'popularMovies' => $popularMovies,
+            'genres' => $genres,
+            'nowPlayingMovies' => $nowPlayingMovies,
+        ]);
     }
 
     /**
@@ -46,6 +78,14 @@ class MoviesController extends Controller
     public function show($id)
     {
         //
+        $movie = Http::withToken(config('services.tmdb.token'))
+            ->get('https://api.themoviedb.org/3/movie/' . $id . '?append_to_response=credits,videos,images')
+            ->json();
+
+        // print_r($movie);
+
+
+        return view('show', ['movie' => $movie]);
     }
 
     /**

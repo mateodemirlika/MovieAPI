@@ -9,6 +9,8 @@
     
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @livewireStyles
+    <script src="//unpkg.com/alpinejs" defer></script>
+
 
 </head>
 <body class="font-sans bg-gray-900 text-white">

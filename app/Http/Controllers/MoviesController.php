@@ -24,7 +24,7 @@ class MoviesController extends Controller
             ->get($this->api_endpoint . 'movie/popular')
             ->json()['results'];
 
-        // dd($popularMovies);
+
 
         $nowPlayingMovies = Http::withToken(config('services.tmdb.token'))
             ->get($this->api_endpoint . 'movie/now_playing')
@@ -33,14 +33,13 @@ class MoviesController extends Controller
         $genresArray = Http::withToken(config('services.tmdb.token'))
             ->get($this->api_endpoint . 'genre/movie/list')
             ->json()['genres'];
-        // dd($genresArray);
+
 
         $genres = collect($genresArray)->mapWithKeys((function ($genre) {
             return [$genre['id'] => $genre['name']];
         }));
 
-        // dump($nowPlayingMovies);
-        // dd($popularMovies);
+
         return view('index', [
             'popularMovies' => $popularMovies,
             'genres' => $genres,
